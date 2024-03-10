@@ -24,3 +24,4 @@ def get_url_btns(
         keyboard.add(InlineKeyboardButton(text=text, url=url))
 
     return keyboard.adjust(*sizes).as_markup()
+

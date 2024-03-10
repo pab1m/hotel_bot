@@ -20,14 +20,9 @@ del_kbd = ReplyKeyboardRemove()
 
 rooms_kb = ReplyKeyboardBuilder()
 rooms_kb.add(
-    KeyboardButton(text="Звичайний"),
-    KeyboardButton(text="Покращений"),
+    KeyboardButton(text="😐 Звичайний"),
+    KeyboardButton(text="😎 Покращений"),
+    KeyboardButton(text="◀ На головну"),
 )
-rooms_kb.adjust(2)
-
-
-keyboard2 = InlineKeyboardBuilder()
-keyboard2.add(InlineKeyboardButton(text="test", callback_data="test"), InlineKeyboardButton(text="test2", callback_data="test2")
-             )
-keyboard2.adjust(2).as_markup()
+rooms_kb.adjust(2, 1)
 
