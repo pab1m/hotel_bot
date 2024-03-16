@@ -25,3 +25,15 @@ def get_url_btns(
 
     return keyboard.adjust(*sizes).as_markup()
 
+
+standard = InlineKeyboardBuilder()
+standard.add(InlineKeyboardButton(text="Однокімнатна", callback_data="one_room_standard"),
+             InlineKeyboardButton(text="Двокімнатна", callback_data="two_room_standard"))
+
+comfort = InlineKeyboardBuilder()
+comfort.add(InlineKeyboardButton(text="Однокімнатна", callback_data="one_room_comfort"),
+            InlineKeyboardButton(text="Двокімнатна", callback_data="two_room_comfort"))
+
+luxe = InlineKeyboardBuilder()
+luxe.add(InlineKeyboardButton(text="Однокімнатна", callback_data="one_room_luxe"),
+         InlineKeyboardButton(text="Двокімнатна", callback_data="two_room_luxe"))

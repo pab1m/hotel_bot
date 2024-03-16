@@ -20,9 +20,19 @@ del_kbd = ReplyKeyboardRemove()
 
 rooms_kb = ReplyKeyboardBuilder()
 rooms_kb.add(
-    KeyboardButton(text="😐 Звичайний"),
-    KeyboardButton(text="😎 Покращений"),
+    KeyboardButton(text="😐 Стандарт"),
+    KeyboardButton(text="😁 Комфорт"),
+    KeyboardButton(text="😎 Люкс"),
     KeyboardButton(text="◀ На головну"),
 )
-rooms_kb.adjust(2, 1)
+rooms_kb.adjust(3, 1)
+
+
+# rooms_1_or_2 = ReplyKeyboardBuilder()
+# rooms_1_or_2.add(
+#     KeyboardButton(text="Однокімнатна"),
+#     KeyboardButton(text="Двокімнатна"),
+#     KeyboardButton(text="Номери"),
+# )
+# rooms_1_or_2.adjust(2, 1)
 

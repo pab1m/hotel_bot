@@ -57,18 +57,81 @@ async def contact_info(message: types.Message):
 @dp.message(F.text == "Номери")
 async def rooms(message: types.Message):
     await message.answer(f"🏠Загальна кількість номерного фонду: 18 номерів (36 місць)\n")
-    await message.answer("Оберіть номер:", reply_markup=rooms_kb.as_markup(resize_keyboard=True, input_field_placeholder='Яка номер Вас цікавить?'))
+    await message.answer("Оберіть номер:", reply_markup=rooms_kb.as_markup(resize_keyboard=True, input_field_placeholder='Який номер Вас цікавить?'))
 
 
-@dp.message(F.text == "😐 Звичайний")
-async def show_info_by_room1(message: types.Message):
-    # with open("rooms_photo/default.jpg", 'rb') as room:
-    #     await bot.send_photo(chat_id=message.from_user.id, photo=room)
+@dp.message(F.text == "😐 Стандарт")
+async def show_info_by_standard_room(message: types.Message):
+    await message.answer(f"Оберіть тип кімнати", reply_markup=standard.as_markup(resize_keyboard=True))
 
-    photo = FSInputFile(r'rooms_photo/default.jpg')
-    await bot.send_photo(message.chat.id, photo)
-    await message.answer(f"🏠Загальна кількість номерного фонду: 18 номерів (36 місць)\n")
-        # await message.answer("Оберіть номер:", reply_markup=rooms_kb.as_markup(resize_keyboard=True, input_field_placeholder='Яка номер Вас цікавить?'))
+
+@dp.callback_query(lambda query: query.data == 'one_room_standard')
+async def one_room_standard(callback: types.CallbackQuery):
+    photo = FSInputFile(r'rooms_photo/standard1.webp')
+    await bot.send_photo(callback.message.chat.id, photo)
+    await callback.message.answer(f"❗Ціна - 400 грн💸\n")
+    await callback.message.answer(f"Оберіть тип кімнати", reply_markup=standard.as_markup(resize_keyboard=True))
+    await callback.answer()
+
+
+@dp.callback_query(lambda query: query.data == 'two_room_standard')
+async def two_room_standard(callback: types.CallbackQuery):
+    photo = FSInputFile(r'rooms_photo/standard2.jpg')
+    await bot.send_photo(callback.message.chat.id, photo)
+    await callback.message.answer(f"❗Ціна - 600 грн💸\n")
+    await callback.message.answer(f"Оберіть тип кімнати", reply_markup=standard.as_markup(resize_keyboard=True))
+    await callback.answer()
+
+
+@dp.message(F.text == "😁 Комфорт")
+async def show_info_by_comfort(message: types.Message):
+    await message.answer(f"Оберіть тип кімнати", reply_markup=comfort.as_markup(resize_keyboard=True))
+
+
+@dp.callback_query(lambda query: query.data == 'one_room_comfort')
+async def one_room_comfort(callback: types.CallbackQuery):
+    photo = FSInputFile(r'rooms_photo/comfort1.webp')
+    await bot.send_photo(callback.message.chat.id, photo)
+    await callback.message.answer(f"❗Ціна - 500 грн💸\n")
+    await callback.message.answer(f"Оберіть тип кімнати", reply_markup=comfort.as_markup(resize_keyboard=True))
+    await callback.answer()
+
+
+@dp.callback_query(lambda query: query.data == 'two_room_comfort')
+async def two_room_comfort(callback: types.CallbackQuery):
+    photo = FSInputFile(r'rooms_photo/comfort2.webp')
+    await bot.send_photo(callback.message.chat.id, photo)
+    await callback.message.answer(f"❗Ціна - 700 грн💸\n")
+    await callback.message.answer(f"Оберіть тип кімнати", reply_markup=comfort.as_markup(resize_keyboard=True))
+    await callback.answer()
+
+
+@dp.message(F.text == "😎 Люкс")
+async def show_info_by_luxe(message: types.Message):
+    await message.answer(f"Оберіть тип кімнати", reply_markup=luxe.as_markup(resize_keyboard=True))
+
+
+@dp.callback_query(lambda query: query.data == 'one_room_luxe')
+async def one_room_luxe(callback: types.CallbackQuery):
+    photo = FSInputFile(r'rooms_photo/luxe1.webp')
+    await bot.send_photo(callback.message.chat.id, photo)
+    await callback.message.answer(f"❗Ціна - 700 грн💸\n")
+    await callback.message.answer(f"Оберіть тип кімнати", reply_markup=luxe.as_markup(resize_keyboard=True))
+    await callback.answer()
+
+
+@dp.callback_query(lambda query: query.data == 'two_room_luxe')
+async def two_room_luxe(callback: types.CallbackQuery):
+    photo = FSInputFile(r'rooms_photo/luxe2.jpg')
+    await bot.send_photo(callback.message.chat.id, photo)
+    await callback.message.answer(f"❗Ціна - 900 грн💸\n")
+    await callback.message.answer(f"Оберіть тип кімнати", reply_markup=luxe.as_markup(resize_keyboard=True))
+    await callback.answer()
+
+
+@dp.message(F.text == "◀ На головну")
+async def start_field(message: types.Message):
+    await message.answer("Оберіть дію:", reply_markup=start_kb)
 
 
 async def main():
