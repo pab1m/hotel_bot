@@ -1,8 +1,19 @@
 import asyncio
+import sqlite3
 
 from aiogram import Bot, Dispatcher, types, F
 from aiogram.filters import CommandStart
+from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import InputFile, FSInputFile
+from aiogram import types
+
+from aiogram import Bot, Dispatcher, F, Router, html
+from aiogram.enums import ParseMode
+from aiogram.filters import Command, CommandStart
+from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import State, StatesGroup
+
 
 from kbds import *
 from inline import *
@@ -132,6 +143,33 @@ async def two_room_luxe(callback: types.CallbackQuery):
 @dp.message(F.text == "◀ На головну")
 async def start_field(message: types.Message):
     await message.answer("Оберіть дію:", reply_markup=start_kb)
+
+
+class FeedbackState(StatesGroup):
+    waiting_for_feedback = State()
+
+
+@dp.message(F.text == "Відгуки")
+async def feedbacks(message: types.Message, state: FSMContext):
+    await message.answer("Напишіть відгук:")
+    await state.set_state(FeedbackState.waiting_for_feedback)
+
+
+@dp.message(FeedbackState.waiting_for_feedback)
+async def send_feedback(message: types.Message, state: FSMContext):
+    data = {'user_text': message.text}
+
+    id_user = message.from_user.id
+    name_user = message.from_user.first_name
+
+    conn = sqlite3.connect('feedbacks.db')
+    cursor = conn.cursor()
+    cursor.execute(
+        f"INSERT INTO feedback (user_id, user_name, user_text) VALUES ({id_user}, '{name_user}', '{data['user_text']}')")
+    conn.commit()
+    conn.close()
+
+    await message.answer("✅ Дякуємо за ваш відгук ✅", reply_markup=start_kb)
 
 
 async def main():

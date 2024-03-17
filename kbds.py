@@ -28,11 +28,3 @@ rooms_kb.add(
 rooms_kb.adjust(3, 1)
 
 
-# rooms_1_or_2 = ReplyKeyboardBuilder()
-# rooms_1_or_2.add(
-#     KeyboardButton(text="Однокімнатна"),
-#     KeyboardButton(text="Двокімнатна"),
-#     KeyboardButton(text="Номери"),
-# )
-# rooms_1_or_2.adjust(2, 1)
-
