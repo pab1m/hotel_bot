@@ -27,6 +27,12 @@ bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
 
+class BookingState(StatesGroup):
+    waiting_for_checkin_date = State()
+    waiting_for_checkout_date = State()
+    waiting_for_room_type = State()
+
+
 @dp.message(CommandStart())
 async def start_cmd(message: types.Message):
     await message.answer(
@@ -68,12 +74,13 @@ async def contact_info(message: types.Message):
 @dp.message(F.text == "Номери")
 async def rooms(message: types.Message):
     await message.answer(f"🏠Загальна кількість номерного фонду: 18 номерів (36 місць)\n")
-    await message.answer("Оберіть номер:", reply_markup=rooms_kb.as_markup(resize_keyboard=True, input_field_placeholder='Який номер Вас цікавить?'))
+    await message.answer("Оберіть номер:", reply_markup=rooms_and_main_kb.as_markup(resize_keyboard=True, input_field_placeholder='Який номер Вас цікавить?'))
 
 
 @dp.message(F.text == "😐 Стандарт")
-async def show_info_by_standard_room(message: types.Message):
+async def show_info_by_standard_room(message: types.Message, state: FSMContext):
     await message.answer(f"Оберіть тип кімнати", reply_markup=standard.as_markup(resize_keyboard=True))
+    # await state.set_state(BookingState.waiting_for_room_type)
 
 
 @dp.callback_query(lambda query: query.data == 'one_room_standard')
@@ -83,6 +90,36 @@ async def one_room_standard(callback: types.CallbackQuery):
     await callback.message.answer(f"❗Ціна - 400 грн💸\n")
     await callback.message.answer(f"Оберіть тип кімнати", reply_markup=standard.as_markup(resize_keyboard=True))
     await callback.answer()
+
+
+# @dp.message(BookingState.waiting_for_room_type)
+# async def process_room_type(message: types.Message, state: FSMContext):
+#     await state.update_data(room_type=message.text)
+#     await message.answer("Введіть дату заїзду (у форматі YYYY-MM-DD):")
+#     await state.set_state(BookingState.waiting_for_checkin_date)
+#
+#
+# @dp.message(BookingState.waiting_for_checkin_date)
+# async def process_checkin_date(message: types.Message, state: FSMContext):
+#     data = await state.get_data()
+#     room_type = data.get('room_type')
+#     checkin_date = message.text
+#
+#     await state.update_data(checkin_date=checkin_date)
+#     await message.answer("Введіть дату виїзду (у форматі YYYY-MM-DD):")
+#     await state.set_state(BookingState.waiting_for_checkout_date)
+#
+#
+# @dp.message(BookingState.waiting_for_checkout_date)
+# async def process_checkout_date(message: types.Message, state: FSMContext):
+#     data = await state.get_data()
+#     room_type = data.get('room_type')
+#     checkin_date = data.get('checkin_date')
+#     checkout_date = message.text
+#
+#     # Тут потрібно вставити код для збереження інформації про бронювання в базі даних
+#     print(room_type + ' ' + checkin_date + ' ' + checkout_date)
+#     await message.answer("Дякуємо! Ваш номер успішно заброньовано.")
 
 
 @dp.callback_query(lambda query: query.data == 'two_room_standard')
@@ -140,6 +177,37 @@ async def two_room_luxe(callback: types.CallbackQuery):
     await callback.answer()
 
 
+@dp.message(F.text == "Бронь")
+async def start_booking(message: types.Message, state: FSMContext):
+    await message.answer("Для початку бронювання оберіть тип номера:", reply_markup=rooms_kb.as_markup(resize_keyboard=True))
+    await state.set_state(BookingState.waiting_for_room_type)
+
+
+@dp.message(BookingState.waiting_for_room_type)
+async def process_room_type(message: types.Message, state: FSMContext):
+    room_type = message.text
+    await state.update_data(room_type=room_type)
+    await message.answer("Введіть дату заїзду (у форматі YYYY-MM-DD):")
+
+
+@dp.message(BookingState.waiting_for_checkin_date)
+async def process_checkin_date(message: types.Message, state: FSMContext):
+    checkin_date = message.text
+    await state.update_data(checkin_date=checkin_date)
+    await message.answer("Введіть дату виїзду (у форматі YYYY-MM-DD):")
+
+
+@dp.message(BookingState.waiting_for_checkout_date)
+async def process_checkout_date(message: types.Message, state: FSMContext):
+    data = await state.get_data()
+    room_type = data.get('room_type')
+    checkin_date = data.get('checkin_date')
+    checkout_date = message.text
+    print(room_type + ' ' + checkin_date + ' ' + checkout_date)
+
+    await message.answer("Ваш номер успішно заброньовано!")
+
+
 @dp.message(F.text == "◀ На головну")
 async def start_field(message: types.Message):
     await message.answer("Оберіть дію:", reply_markup=start_kb)
@@ -156,16 +224,15 @@ async def feedbacks(message: types.Message, state: FSMContext):
 
 
 @dp.message(FeedbackState.waiting_for_feedback)
-async def send_feedback(message: types.Message, state: FSMContext):
+async def send_feedback(message: types.Message):
     data = {'user_text': message.text}
 
     id_user = message.from_user.id
-    name_user = message.from_user.first_name
 
     conn = sqlite3.connect('feedbacks.db')
     cursor = conn.cursor()
     cursor.execute(
-        f"INSERT INTO feedback (user_id, user_name, user_text) VALUES ({id_user}, '{name_user}', '{data['user_text']}')")
+        f"INSERT INTO feedback (user_id, user_text) VALUES ({id_user}, '{data['user_text']}')")
     conn.commit()
     conn.close()
 
