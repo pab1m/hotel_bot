@@ -27,12 +27,6 @@ bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
 
-class BookingState(StatesGroup):
-    waiting_for_checkin_date = State()
-    waiting_for_checkout_date = State()
-    waiting_for_room_type = State()
-
-
 @dp.message(CommandStart())
 async def start_cmd(message: types.Message):
     await message.answer(
@@ -92,36 +86,6 @@ async def one_room_standard(callback: types.CallbackQuery):
     await callback.answer()
 
 
-# @dp.message(BookingState.waiting_for_room_type)
-# async def process_room_type(message: types.Message, state: FSMContext):
-#     await state.update_data(room_type=message.text)
-#     await message.answer("Введіть дату заїзду (у форматі YYYY-MM-DD):")
-#     await state.set_state(BookingState.waiting_for_checkin_date)
-#
-#
-# @dp.message(BookingState.waiting_for_checkin_date)
-# async def process_checkin_date(message: types.Message, state: FSMContext):
-#     data = await state.get_data()
-#     room_type = data.get('room_type')
-#     checkin_date = message.text
-#
-#     await state.update_data(checkin_date=checkin_date)
-#     await message.answer("Введіть дату виїзду (у форматі YYYY-MM-DD):")
-#     await state.set_state(BookingState.waiting_for_checkout_date)
-#
-#
-# @dp.message(BookingState.waiting_for_checkout_date)
-# async def process_checkout_date(message: types.Message, state: FSMContext):
-#     data = await state.get_data()
-#     room_type = data.get('room_type')
-#     checkin_date = data.get('checkin_date')
-#     checkout_date = message.text
-#
-#     # Тут потрібно вставити код для збереження інформації про бронювання в базі даних
-#     print(room_type + ' ' + checkin_date + ' ' + checkout_date)
-#     await message.answer("Дякуємо! Ваш номер успішно заброньовано.")
-
-
 @dp.callback_query(lambda query: query.data == 'two_room_standard')
 async def two_room_standard(callback: types.CallbackQuery):
     photo = FSInputFile(r'rooms_photo/standard2.jpg')
@@ -177,32 +141,52 @@ async def two_room_luxe(callback: types.CallbackQuery):
     await callback.answer()
 
 
-@dp.message(F.text == "Бронь")
+class BookingState(StatesGroup):
+    waiting_for_room_type = State()
+    # waiting_one_or_two_room_type = State()
+    waiting_for_checkin_date = State()
+    waiting_for_checkout_date = State()
+
+
+@dp.message(F.text == "Забронювати номер")
 async def start_booking(message: types.Message, state: FSMContext):
-    await message.answer("Для початку бронювання оберіть тип номера:", reply_markup=rooms_kb.as_markup(resize_keyboard=True))
     await state.set_state(BookingState.waiting_for_room_type)
+    await message.answer("Для початку бронювання оберіть тип номера:", reply_markup=rooms_kb.as_markup(resize_keyboard=True))
+
+
+# @dp.message(BookingState.waiting_for_room_type)
+# async def process_room_type(message: types.Message, state: FSMContext):
+#     one_or_two_room_type = message.text
+#     await state.update_data(room_type=one_or_two_room_type)
+#     await state.set_state(BookingState.waiting_one_or_two_room_type)
+#     await message.answer("Одномісна чи Двомісна?:", reply_markup=one_or_two_rooms_kb.as_markup(resize_keyboard=True))
 
 
 @dp.message(BookingState.waiting_for_room_type)
 async def process_room_type(message: types.Message, state: FSMContext):
     room_type = message.text
     await state.update_data(room_type=room_type)
-    await message.answer("Введіть дату заїзду (у форматі YYYY-MM-DD):")
+    await state.set_state(BookingState.waiting_for_checkin_date)
+    await message.answer("Введіть дату заїзду (у форматі YYYY-MM-DD):", reply_markup=del_kbd)
 
 
 @dp.message(BookingState.waiting_for_checkin_date)
 async def process_checkin_date(message: types.Message, state: FSMContext):
     checkin_date = message.text
     await state.update_data(checkin_date=checkin_date)
+    await state.set_state(BookingState.waiting_for_checkout_date)
     await message.answer("Введіть дату виїзду (у форматі YYYY-MM-DD):")
 
 
 @dp.message(BookingState.waiting_for_checkout_date)
 async def process_checkout_date(message: types.Message, state: FSMContext):
     data = await state.get_data()
+    await state.clear()
     room_type = data.get('room_type')
+    # one_or_two_room_type = data.get('one_or_two_room_type')
     checkin_date = data.get('checkin_date')
     checkout_date = message.text
+    # print(room_type + ' ' + one_or_two_room_type + ' ' + checkin_date + ' ' + checkout_date)
     print(room_type + ' ' + checkin_date + ' ' + checkout_date)
 
     await message.answer("Ваш номер успішно заброньовано!")

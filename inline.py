@@ -27,13 +27,13 @@ def get_url_btns(
 
 
 standard = InlineKeyboardBuilder()
-standard.add(InlineKeyboardButton(text="Однокімнатна", callback_data="one_room_standard"),
-             InlineKeyboardButton(text="Двокімнатна", callback_data="two_room_standard"))
+standard.add(InlineKeyboardButton(text="Одномісна", callback_data="one_room_standard"),
+             InlineKeyboardButton(text="Двомісна", callback_data="two_room_standard"))
 
 comfort = InlineKeyboardBuilder()
-comfort.add(InlineKeyboardButton(text="Однокімнатна", callback_data="one_room_comfort"),
-            InlineKeyboardButton(text="Двокімнатна", callback_data="two_room_comfort"))
+comfort.add(InlineKeyboardButton(text="Одномісна", callback_data="one_room_comfort"),
+            InlineKeyboardButton(text="Двомісна", callback_data="two_room_comfort"))
 
 luxe = InlineKeyboardBuilder()
-luxe.add(InlineKeyboardButton(text="Однокімнатна", callback_data="one_room_luxe"),
-         InlineKeyboardButton(text="Двокімнатна", callback_data="two_room_luxe"))
+luxe.add(InlineKeyboardButton(text="Одномісна", callback_data="one_room_luxe"),
+         InlineKeyboardButton(text="Двомісна", callback_data="two_room_luxe"))
