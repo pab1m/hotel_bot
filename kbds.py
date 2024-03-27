@@ -1,21 +1,23 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove, InlineKeyboardButton
 from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
 
+from datetime import datetime, timedelta
+
+
 start_kb = ReplyKeyboardMarkup(
     keyboard=[
         [
-            KeyboardButton(text="Контактна інформація"),
+            KeyboardButton(text="📜 Контактна інформація"),
         ],
         [
-            KeyboardButton(text="Номери"),
+            KeyboardButton(text="🏘 Номери"),
             KeyboardButton(text="Забронювати номер"),
         ],
         [
-            KeyboardButton(text="Відгуки"),
+            KeyboardButton(text="💬 Відгуки"),
         ]
     ],
     resize_keyboard=True,
-    input_field_placeholder='Що Вам цікаво?'
 )
 
 del_kbd = ReplyKeyboardRemove()
@@ -48,9 +50,12 @@ one_or_two_rooms_kb.add(
 one_or_two_rooms_kb.adjust(2)
 
 
-# @dp.message(BookingState.waiting_for_room_type)
-# async def process_room_type(message: types.Message, state: FSMContext):
-#     one_or_two_room_type = message.text
-#     await state.update_data(room_type=one_or_two_room_type)
-#     await state.set_state(BookingState.waiting_one_or_two_room_type)
-#     await message.answer("Одномісна чи Двомісна?:", reply_markup=one_or_two_rooms_kb.as_markup(resize_keyboard=True))
+def generate_date_keyboard(checkin_date):
+    date_kb = ReplyKeyboardBuilder()
+    for i in range(8):
+        date = checkin_date + timedelta(days=i+1)
+        date_kb.add(KeyboardButton(text=f"{date.strftime('%d-%m-%Y')}"))
+    return date_kb.adjust(3, 3, 2).as_markup(resize_keyboard=True)
+
+
+

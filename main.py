@@ -14,6 +14,7 @@ from aiogram.filters import Command, CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 
+from datetime import datetime
 
 from kbds import *
 from inline import *
@@ -34,7 +35,7 @@ async def start_cmd(message: types.Message):
         f"'Україна'!", parse_mode="html", reply_markup=start_kb)
 
 
-@dp.message(F.text == "Контактна інформація")
+@dp.message(F.text == "📜 Контактна інформація")
 async def contact_info(message: types.Message):
     phone_link_1 = f"Телефон для зв'язку 1: +380673406322"
     phone_link_2 = f"Телефон для зв'язку 2: +380326542142"
@@ -56,25 +57,18 @@ async def contact_info(message: types.Message):
                          f"👨🏫Керівник:  Гавришків Ірена Петрівна\n\n"
                          
                          f"📍Адреса: 80700 Львівська обл. Золочівський р-н, м. Золочів вул. Валова 4\n",
-                         parse_mode="html", reply_markup=contact_info_keyboard.as_markup(resize_keyboard=True)
-            #              get_url_btns(
-            # btns={
-            #     '🌐Відвідати сайт': f'{website_url}',
-            #     '📍На карті': f'{map_location}'
-            # })
-    )
+                         parse_mode="html", reply_markup=contact_info_keyboard.as_markup(resize_keyboard=True))
 
 
-@dp.message(F.text == "Номери")
+@dp.message(F.text == "🏘 Номери")
 async def rooms(message: types.Message):
     await message.answer(f"🏠Загальна кількість номерного фонду: 18 номерів (36 місць)\n")
-    await message.answer("Оберіть номер:", reply_markup=rooms_and_main_kb.as_markup(resize_keyboard=True, input_field_placeholder='Який номер Вас цікавить?'))
+    await message.answer("Оберіть номер:", reply_markup=rooms_and_main_kb.as_markup(resize_keyboard=True))
 
 
 @dp.message(F.text == "😐 Стандарт")
 async def show_info_by_standard_room(message: types.Message, state: FSMContext):
-    await message.answer(f"Оберіть тип кімнати", reply_markup=standard.as_markup(resize_keyboard=True))
-    # await state.set_state(BookingState.waiting_for_room_type)
+    await message.answer(f"Оберіть тип кімнати:", reply_markup=standard.as_markup(resize_keyboard=True))
 
 
 @dp.callback_query(lambda query: query.data == 'one_room_standard')
@@ -82,7 +76,7 @@ async def one_room_standard(callback: types.CallbackQuery):
     photo = FSInputFile(r'rooms_photo/standard1.webp')
     await bot.send_photo(callback.message.chat.id, photo)
     await callback.message.answer(f"❗Ціна - 400 грн💸\n")
-    await callback.message.answer(f"Оберіть тип кімнати", reply_markup=standard.as_markup(resize_keyboard=True))
+    await callback.message.answer(f"Оберіть тип кімнати:", reply_markup=standard.as_markup(resize_keyboard=True))
     await callback.answer()
 
 
@@ -91,13 +85,13 @@ async def two_room_standard(callback: types.CallbackQuery):
     photo = FSInputFile(r'rooms_photo/standard2.jpg')
     await bot.send_photo(callback.message.chat.id, photo)
     await callback.message.answer(f"❗Ціна - 600 грн💸\n")
-    await callback.message.answer(f"Оберіть тип кімнати", reply_markup=standard.as_markup(resize_keyboard=True))
+    await callback.message.answer(f"Оберіть тип кімнати:", reply_markup=standard.as_markup(resize_keyboard=True))
     await callback.answer()
 
 
 @dp.message(F.text == "😁 Комфорт")
 async def show_info_by_comfort(message: types.Message):
-    await message.answer(f"Оберіть тип кімнати", reply_markup=comfort.as_markup(resize_keyboard=True))
+    await message.answer(f"Оберіть тип кімнати:", reply_markup=comfort.as_markup(resize_keyboard=True))
 
 
 @dp.callback_query(lambda query: query.data == 'one_room_comfort')
@@ -105,7 +99,7 @@ async def one_room_comfort(callback: types.CallbackQuery):
     photo = FSInputFile(r'rooms_photo/comfort1.webp')
     await bot.send_photo(callback.message.chat.id, photo)
     await callback.message.answer(f"❗Ціна - 500 грн💸\n")
-    await callback.message.answer(f"Оберіть тип кімнати", reply_markup=comfort.as_markup(resize_keyboard=True))
+    await callback.message.answer(f"Оберіть тип кімнати:", reply_markup=comfort.as_markup(resize_keyboard=True))
     await callback.answer()
 
 
@@ -114,13 +108,13 @@ async def two_room_comfort(callback: types.CallbackQuery):
     photo = FSInputFile(r'rooms_photo/comfort2.webp')
     await bot.send_photo(callback.message.chat.id, photo)
     await callback.message.answer(f"❗Ціна - 700 грн💸\n")
-    await callback.message.answer(f"Оберіть тип кімнати", reply_markup=comfort.as_markup(resize_keyboard=True))
+    await callback.message.answer(f"Оберіть тип кімнати:", reply_markup=comfort.as_markup(resize_keyboard=True))
     await callback.answer()
 
 
 @dp.message(F.text == "😎 Люкс")
 async def show_info_by_luxe(message: types.Message):
-    await message.answer(f"Оберіть тип кімнати", reply_markup=luxe.as_markup(resize_keyboard=True))
+    await message.answer(f"Оберіть тип кімнати:", reply_markup=luxe.as_markup(resize_keyboard=True))
 
 
 @dp.callback_query(lambda query: query.data == 'one_room_luxe')
@@ -128,7 +122,7 @@ async def one_room_luxe(callback: types.CallbackQuery):
     photo = FSInputFile(r'rooms_photo/luxe1.webp')
     await bot.send_photo(callback.message.chat.id, photo)
     await callback.message.answer(f"❗Ціна - 700 грн💸\n")
-    await callback.message.answer(f"Оберіть тип кімнати", reply_markup=luxe.as_markup(resize_keyboard=True))
+    await callback.message.answer(f"Оберіть тип кімнати:", reply_markup=luxe.as_markup(resize_keyboard=True))
     await callback.answer()
 
 
@@ -137,15 +131,16 @@ async def two_room_luxe(callback: types.CallbackQuery):
     photo = FSInputFile(r'rooms_photo/luxe2.jpg')
     await bot.send_photo(callback.message.chat.id, photo)
     await callback.message.answer(f"❗Ціна - 900 грн💸\n")
-    await callback.message.answer(f"Оберіть тип кімнати", reply_markup=luxe.as_markup(resize_keyboard=True))
+    await callback.message.answer(f"Оберіть тип кімнати:", reply_markup=luxe.as_markup(resize_keyboard=True))
     await callback.answer()
 
 
 class BookingState(StatesGroup):
     waiting_for_room_type = State()
-    # waiting_one_or_two_room_type = State()
+    waiting_one_or_two_room_type = State()
     waiting_for_checkin_date = State()
     waiting_for_checkout_date = State()
+    name = State()
 
 
 @dp.message(F.text == "Забронювати номер")
@@ -154,42 +149,55 @@ async def start_booking(message: types.Message, state: FSMContext):
     await message.answer("Для початку бронювання оберіть тип номера:", reply_markup=rooms_kb.as_markup(resize_keyboard=True))
 
 
-# @dp.message(BookingState.waiting_for_room_type)
-# async def process_room_type(message: types.Message, state: FSMContext):
-#     one_or_two_room_type = message.text
-#     await state.update_data(room_type=one_or_two_room_type)
-#     await state.set_state(BookingState.waiting_one_or_two_room_type)
-#     await message.answer("Одномісна чи Двомісна?:", reply_markup=one_or_two_rooms_kb.as_markup(resize_keyboard=True))
-
-
 @dp.message(BookingState.waiting_for_room_type)
-async def process_room_type(message: types.Message, state: FSMContext):
+async def one_or_two_rooms_type(message: types.Message, state: FSMContext):
+    one_or_two_room_type = message.text
+    await state.update_data(one_or_two_room_type=one_or_two_room_type)
+    await state.set_state(BookingState.waiting_one_or_two_room_type)
+    await message.answer("Одномісна чи Двомісна?", reply_markup=one_or_two_rooms_kb.as_markup(resize_keyboard=True))
+
+
+@dp.message(BookingState.waiting_one_or_two_room_type)
+async def checkin_dates(message: types.Message, state: FSMContext):
     room_type = message.text
     await state.update_data(room_type=room_type)
     await state.set_state(BookingState.waiting_for_checkin_date)
-    await message.answer("Введіть дату заїзду (у форматі YYYY-MM-DD):", reply_markup=del_kbd)
+    await message.answer("Оберіть дату заїзду:", reply_markup=generate_date_keyboard(datetime.now().date().today()))
 
 
 @dp.message(BookingState.waiting_for_checkin_date)
-async def process_checkin_date(message: types.Message, state: FSMContext):
-    checkin_date = message.text
+async def checkout_dates(message: types.Message, state: FSMContext):
+    checkin_date = datetime.strptime(message.text, "%d-%m-%Y").date()
     await state.update_data(checkin_date=checkin_date)
     await state.set_state(BookingState.waiting_for_checkout_date)
-    await message.answer("Введіть дату виїзду (у форматі YYYY-MM-DD):")
+    await message.answer("Оберіть дату виїзду:", reply_markup=generate_date_keyboard(checkin_date))
 
 
 @dp.message(BookingState.waiting_for_checkout_date)
+async def process_checkin_inf(message: types.Message, state: FSMContext):
+    checkout_date = datetime.strptime(message.text, "%d-%m-%Y").date()
+    await state.update_data(checkout_date=checkout_date)
+    await state.set_state(BookingState.name)
+    await message.answer("Введіть <b>Прізвище</b> та <b>Ім'я</b>", parse_mode="html", reply_markup=del_kbd)
+
+
+@dp.message(BookingState.name)
 async def process_checkout_date(message: types.Message, state: FSMContext):
     data = await state.get_data()
     await state.clear()
     room_type = data.get('room_type')
-    # one_or_two_room_type = data.get('one_or_two_room_type')
-    checkin_date = data.get('checkin_date')
-    checkout_date = message.text
-    # print(room_type + ' ' + one_or_two_room_type + ' ' + checkin_date + ' ' + checkout_date)
-    print(room_type + ' ' + checkin_date + ' ' + checkout_date)
+    one_or_two_room_type = data.get('one_or_two_room_type')
+    checkin_date = str(data.get('checkin_date'))
+    checkout_date = str(data.get('checkout_date'))
 
-    await message.answer("Ваш номер успішно заброньовано!")
+    inf = message.text
+    inf_parts = inf.split()
+    first_name = inf_parts[0]
+    last_name = ' '.join(inf_parts[1:])
+
+    print(room_type + ' ' + one_or_two_room_type + ' ' + checkin_date + ' ' + checkout_date + ' ' + first_name + ' ' + last_name)
+
+    await message.answer("✅ Ваш номер успішно заброньовано! ✅", reply_markup=start_kb)
 
 
 @dp.message(F.text == "◀ На головну")
@@ -201,9 +209,9 @@ class FeedbackState(StatesGroup):
     waiting_for_feedback = State()
 
 
-@dp.message(F.text == "Відгуки")
+@dp.message(F.text == "💬 Відгуки")
 async def feedbacks(message: types.Message, state: FSMContext):
-    await message.answer("Напишіть відгук:")
+    await message.answer("Напишіть відгук:", reply_markup=del_kbd)
     await state.set_state(FeedbackState.waiting_for_feedback)
 
 
