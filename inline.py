@@ -37,4 +37,3 @@ comfort.add(InlineKeyboardButton(text="🧍Одномісна🧍‍♀️", cal
 luxe = InlineKeyboardBuilder()
 luxe.add(InlineKeyboardButton(text="🧍Одномісна🧍‍♀️", callback_data="one_room_luxe"),
          InlineKeyboardButton(text="👫Двомісна👭", callback_data="two_room_luxe"))
-

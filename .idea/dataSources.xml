@@ -12,7 +12,7 @@
       <driver-ref>sqlite.xerial</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:C:\Users\user\PycharmProjects\hotel\reservation.db</jdbc-url>
+      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/reservation.db</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
       <libraries>
         <library>
@@ -22,6 +22,13 @@
           <url>file://$APPLICATION_CONFIG_DIR$/jdbc-drivers/Xerial SQLiteJDBC/3.45.1/org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar</url>
         </library>
       </libraries>
+    </data-source>
+    <data-source source="LOCAL" name="identifier.sqlite" uuid="471137f6-45e8-4ea4-8ed7-c0b3365e84f3">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:identifier.sqlite</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>
 </project>

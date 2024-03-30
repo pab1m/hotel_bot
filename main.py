@@ -1,15 +1,11 @@
 import asyncio
 import sqlite3
 
-from aiogram import Bot, Dispatcher, types, F
-from aiogram.filters import CommandStart
-from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import StatesGroup, State
-from aiogram.types import InputFile, FSInputFile
+from aiogram.filters import StateFilter
+from aiogram.types import FSInputFile
 from aiogram import types
 
-from aiogram import Bot, Dispatcher, F, Router, html
-from aiogram.enums import ParseMode
+from aiogram import Bot, Dispatcher, F
 from aiogram.filters import Command, CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
@@ -18,7 +14,6 @@ from datetime import datetime
 
 from kbds import *
 from inline import *
-
 
 TOKEN = "6822014885:AAGfBcgj1HZeA2BJ1LlFIg76bWhh0gzWQzM"
 
@@ -40,22 +35,23 @@ async def contact_info(message: types.Message):
     phone_link_1 = f"Телефон для зв'язку 1: +380673406322"
     phone_link_2 = f"Телефон для зв'язку 2: +380326542142"
     website_url = "https://zlmr.gov.ua/index.php/zhkh/komunalni-pidpryiemstva/hotel-ukraina"
-    map_location = ("https://www.google.com/maps/place/%D0%9A%D0%9F+%D0%B3%D0%BE%D1%82%D0%B5%D0%BB%D1%8C+%C2%AB%D0%A3%D0%BA%D1%80%D0%B0%D1%97%D0%BD%D0%B0%C2%BB/@49.8055415,"
-                    "24.8994852,18.75z/data=!4m9!3m8!1s0x47300759c6464e6b:0x5a8e1f2257f61a24!5m2!4m1!1i2!8m2!3d49.8055267!4d24.8997192!16s%2Fg%2F11h4rv8b3y?authuser=0&entry=ttu")
+    map_location = (
+        "https://www.google.com/maps/place/%D0%9A%D0%9F+%D0%B3%D0%BE%D1%82%D0%B5%D0%BB%D1%8C+%C2%AB%D0%A3%D0%BA%D1%80%D0%B0%D1%97%D0%BD%D0%B0%C2%BB/@49.8055415,"
+        "24.8994852,18.75z/data=!4m9!3m8!1s0x47300759c6464e6b:0x5a8e1f2257f61a24!5m2!4m1!1i2!8m2!3d49.8055267!4d24.8997192!16s%2Fg%2F11h4rv8b3y?authuser=0&entry=ttu")
 
     contact_info_keyboard = InlineKeyboardBuilder()
     contact_info_keyboard.add(InlineKeyboardButton(text="🌐Відвідати сайт", url=website_url),
                               InlineKeyboardButton(text="📍На карті", url=map_location))
 
-    await message.answer(f"━━━━━<b>Готель 'Україна'</b>━━━━━\n"
+    await message.answer(f'━━━━━<b>Готель "Україна"</b>━━━━━\n'
                          f"📅Графік роботи: <b>цілодобово</b>\n\n"
-                         
+
                          f"📞{phone_link_1}\n"
                          f"📞{phone_link_2}\n"
                          f"📧Електронна пошта: <a type='email'>hotel.zl@ukr.net</a>\n\n"
-                         
+
                          f"👨🏫Керівник:  Гавришків Ірена Петрівна\n\n"
-                         
+
                          f"📍Адреса: 80700 Львівська обл. Золочівський р-н, м. Золочів вул. Валова 4\n",
                          parse_mode="html", reply_markup=contact_info_keyboard.as_markup(resize_keyboard=True))
 
@@ -93,7 +89,7 @@ async def rooms(message: types.Message):
 
 
 @dp.message(F.text == "😐 Стандарт")
-async def show_info_by_standard_room(message: types.Message, state: FSMContext):
+async def show_info_by_standard_room(message: types.Message):
     await message.answer(f"Оберіть тип кімнати:", reply_markup=standard.as_markup(resize_keyboard=True))
 
 
@@ -162,54 +158,79 @@ async def two_room_luxe(callback: types.CallbackQuery):
 
 
 class BookingState(StatesGroup):
-    waiting_for_room_type = State()
-    waiting_one_or_two_room_type = State()
-    waiting_for_checkin_date = State()
-    waiting_for_checkout_date = State()
+    room_type = State()
+    one_or_two_room_type = State()
+    checkin_date = State()
+    checkout_date = State()
     name = State()
 
 
 @dp.message(F.text == "📖 Бронювання номерів")
-async def start_booking(message: types.Message, state: FSMContext):
+async def start_booking(message: types.Message):
     await message.answer("Оберіть:", reply_markup=reservation_kb.as_markup(resize_keyboard=True))
 
 
 @dp.message(F.text == "🔔 Забронювати номер")
-async def start_booking(message: types.Message, state: FSMContext):
-    await state.set_state(BookingState.waiting_for_room_type)
-    await message.answer("Для початку бронювання оберіть тип номера:", reply_markup=rooms_kb.as_markup(resize_keyboard=True))
+async def booking(message: types.Message, state: FSMContext):
+    await message.answer(
+        'Для початку бронювання оберіть тип номера: \n(якщо потрібно відмінити всі дії, введіть команду <b>"скасувати"</b>)',
+        reply_markup=rooms_kb.as_markup(resize_keyboard=True), parse_mode='html')
+    await state.set_state(BookingState.room_type)
 
 
-@dp.message(BookingState.waiting_for_room_type)
+@dp.message(StateFilter('*'), Command("скасувати"))
+@dp.message(StateFilter('*'), F.text.casefold() == "скасувати")
+@dp.message(StateFilter('*'), F.text == "❌Скасувати")
+async def cancel_handler(message: types.Message, state: FSMContext):
+    current_state = await state.get_state()
+    if current_state is None:
+        return
+
+    await state.clear()
+    await message.answer("❗Дія скасована❗", reply_markup=reservation_kb.as_markup(resize_keyboard=True))
+
+
+@dp.message(BookingState.room_type)
 async def one_or_two_rooms_type(message: types.Message, state: FSMContext):
-    one_or_two_room_type = message.text
-    await state.update_data(one_or_two_room_type=one_or_two_room_type)
-    await state.set_state(BookingState.waiting_one_or_two_room_type)
-    await message.answer("Одномісна чи Двомісна?", reply_markup=one_or_two_rooms_kb.as_markup(resize_keyboard=True))
-
-
-@dp.message(BookingState.waiting_one_or_two_room_type)
-async def checkin_dates(message: types.Message, state: FSMContext):
     room_type = message.text
-    await state.update_data(room_type=room_type)
-    await state.set_state(BookingState.waiting_for_checkin_date)
-    await message.answer("Оберіть дату заїзду:", reply_markup=generate_date_keyboard(datetime.now().date().today()))
+    if room_type in ["Стандарт", "Комфорт", "Люкс"]:
+        await state.update_data(room_type=room_type)
+        await message.answer("Одномісна чи Двомісна?", reply_markup=one_or_two_rooms_kb.as_markup(resize_keyboard=True))
+        await state.set_state(BookingState.one_or_two_room_type)
+    else:
+        await message.answer("Будь ласка, оберіть номер зі списку.", reply_markup=rooms_kb.as_markup(resize_keyboard=True))
 
 
-@dp.message(BookingState.waiting_for_checkin_date)
+@dp.message(BookingState.one_or_two_room_type)
+async def checkin_dates(message: types.Message, state: FSMContext):
+    one_or_two_room_type = message.text
+    if one_or_two_room_type in ["Одномісна", "Двомісна"]:
+        await state.update_data(one_or_two_room_type=one_or_two_room_type)
+        await message.answer("Оберіть дату заїзду:", reply_markup=generate_date_keyboard(datetime.now().date().today()))
+        await state.set_state(BookingState.checkin_date)
+    else:
+        await message.answer("Будь ласка, оберіть тип із списку.", reply_markup=one_or_two_rooms_kb.as_markup(resize_keyboard=True))
+
+
+@dp.message(BookingState.checkin_date)
 async def checkout_dates(message: types.Message, state: FSMContext):
-    checkin_date = datetime.strptime(message.text, "%d-%m-%Y").date()
-    await state.update_data(checkin_date=checkin_date)
-    await state.set_state(BookingState.waiting_for_checkout_date)
-    await message.answer("Оберіть дату виїзду:", reply_markup=generate_date_keyboard(checkin_date))
+    try:
+        checkin_date = datetime.strptime(message.text, "%d-%m-%Y").date()
+        await state.update_data(checkin_date=checkin_date)
+        await message.answer("Оберіть дату виїзду:", reply_markup=generate_date_keyboard(checkin_date))
+        await state.set_state(BookingState.checkout_date)
+    except ValueError:
+        await message.answer("Будь ласка, оберіть дату із запропонованих.")
 
 
-@dp.message(BookingState.waiting_for_checkout_date)
+@dp.message(BookingState.checkout_date)
 async def process_checkin_inf(message: types.Message, state: FSMContext):
-    checkout_date = datetime.strptime(message.text, "%d-%m-%Y").date()
-    await state.update_data(checkout_date=checkout_date)
-    await state.set_state(BookingState.name)
-    await message.answer("Введіть <b>Прізвище</b> та <b>Ім'я</b>", parse_mode="html", reply_markup=del_kbd)
+    try:
+        await state.update_data(checkout_date=datetime.strptime(message.text, "%d-%m-%Y").date())
+        await message.answer("Введіть <b>Прізвище</b> та <b>Ім'я</b>", parse_mode="html", reply_markup=del_kbd)
+        await state.set_state(BookingState.name)
+    except ValueError:
+        await message.answer("Будь ласка, оберіть дату із запропонованих.")
 
 
 @dp.message(BookingState.name)
@@ -233,9 +254,10 @@ async def process_checkout_date(message: types.Message, state: FSMContext):
         f" VALUES ({id_user}, '{room_type}', '{one_or_two_room_type}', '{checkin_date}', '{checkout_date}', '{first_name}', '{last_name}')")
     conn.commit()
     conn.close()
-    await state.clear()
 
+    await state.clear()
     await message.answer("✅ Ваш номер успішно заброньовано! ✅", reply_markup=start_kb)
+    await state.clear()
 
 
 @dp.message(F.text == "📜 Мої заброньовані номери")
@@ -253,13 +275,48 @@ async def my_bookings(message: types.Message):
         return
 
     response = "Ваші заброньовані номери:\n"
-    for reservation in reservations:
-        response += (f"\n1️⃣️ Тип номера: <b>{reservation[3]}</b> "
-                     f"\n2️⃣ Одно-/двомісна: <b>{reservation[2]}</b> "
-                     f"\n3️⃣ Дата заїзду: <b>{reservation[4]}</b> "
-                     f"\n4️⃣ Дата виїзду: <b>{reservation[5]}</b>\n")
+    await message.answer(response, reply_markup=my_reservation_kb.as_markup(resize_keyboard=True))
 
-    await message.answer(response, parse_mode="html")
+    for reservation in reservations:
+        response = (f"\n✅ ID Вашого бронювання: <b>{reservation[0]}</b>"
+                    f"\n🏠 Тип номера: <b>{reservation[2]}</b> "
+                    f"\n🛏 Одно-/двомісна: <b>{reservation[3]}</b> "
+                    f"\n🗓 Дата заїзду: <b>{reservation[4]}</b> "
+                    f"\n📆 Дата виїзду: <b>{reservation[5]}</b>\n")
+        await message.answer(response, parse_mode="html")
+
+
+@dp.message(lambda message: message.text.startswith("❌ Видалити бронювання"))
+async def cancel_reservation(message: types.Message):
+    user_id = message.from_user.id
+    conn = sqlite3.connect('reservation.db')
+    cursor = conn.cursor()
+
+    cursor.execute(f"SELECT * FROM reservation WHERE user_id = {user_id}")
+    remaining_reservations = cursor.fetchall()
+    if not remaining_reservations:
+        await message.answer("У вас не залишилося жодного бронювання.")
+    else:
+        await message.answer("Введіть ID бронювання:", reply_markup=del_kbd)
+
+        @dp.message(lambda msg: msg.from_user.id == user_id)
+        async def process_reservation_id(msg: types.Message):
+            try:
+                reservation_id = int(msg.text)
+            except ValueError:
+                await message.answer("Неправильний формат ID. Будь ласка, введіть ціле число.")
+                return
+
+            cursor.execute(f"SELECT * FROM reservation WHERE id = {reservation_id} AND user_id = {user_id}")
+            reservation = cursor.fetchone()
+
+            if reservation:
+                cursor.execute(f"DELETE FROM reservation WHERE id = {reservation_id}")
+                conn.commit()
+                await message.answer(f"Бронювання <b>{reservation_id}</b> видалено.", reply_markup=reservation_kb.as_markup(resize_keyboard=True), parse_mode='html')
+            else:
+                await message.answer("Це не ваше бронювання, видалення неможливе.")
+    # conn.close()
 
 
 @dp.message(F.text == "◀ На головну")
