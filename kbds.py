@@ -7,11 +7,11 @@ from datetime import datetime, timedelta
 start_kb = ReplyKeyboardMarkup(
     keyboard=[
         [
-            KeyboardButton(text="📜 Контактна інформація"),
+            KeyboardButton(text="📞 Контактна інформація"),
         ],
         [
             KeyboardButton(text="🏘 Номери"),
-            KeyboardButton(text="Забронювати номер"),
+            KeyboardButton(text="📖 Бронювання номерів"),
         ],
         [
             KeyboardButton(text="💬 Відгуки"),
@@ -48,6 +48,15 @@ one_or_two_rooms_kb.add(
     KeyboardButton(text="Двомісна"),
 )
 one_or_two_rooms_kb.adjust(2)
+
+
+reservation_kb = ReplyKeyboardBuilder()
+reservation_kb.add(
+    KeyboardButton(text="🔔 Забронювати номер"),
+    KeyboardButton(text="📜 Мої заброньовані номери"),
+    KeyboardButton(text="◀ На головну"),
+)
+reservation_kb.adjust(2, 1)
 
 
 def generate_date_keyboard(checkin_date):

@@ -35,7 +35,7 @@ async def start_cmd(message: types.Message):
         f"'Україна'!", parse_mode="html", reply_markup=start_kb)
 
 
-@dp.message(F.text == "📜 Контактна інформація")
+@dp.message(F.text == "📞 Контактна інформація")
 async def contact_info(message: types.Message):
     phone_link_1 = f"Телефон для зв'язку 1: +380673406322"
     phone_link_2 = f"Телефон для зв'язку 2: +380326542142"
@@ -58,6 +58,32 @@ async def contact_info(message: types.Message):
                          
                          f"📍Адреса: 80700 Львівська обл. Золочівський р-н, м. Золочів вул. Валова 4\n",
                          parse_mode="html", reply_markup=contact_info_keyboard.as_markup(resize_keyboard=True))
+
+
+class FeedbackState(StatesGroup):
+    waiting_for_feedback = State()
+
+
+@dp.message(F.text == "💬 Відгуки")
+async def feedbacks(message: types.Message, state: FSMContext):
+    await message.answer("Напишіть відгук:", reply_markup=del_kbd)
+    await state.set_state(FeedbackState.waiting_for_feedback)
+
+
+@dp.message(FeedbackState.waiting_for_feedback)
+async def send_feedback(message: types.Message, state: FSMContext):
+    data = {'user_text': message.text}
+
+    id_user = message.from_user.id
+
+    conn = sqlite3.connect('feedbacks.db')
+    cursor = conn.cursor()
+    cursor.execute(
+        f"INSERT INTO feedback (user_id, user_text) VALUES ({id_user}, '{data['user_text']}')")
+    conn.commit()
+    conn.close()
+    await state.clear()
+    await message.answer("✅ Дякуємо за ваш відгук ✅", reply_markup=start_kb)
 
 
 @dp.message(F.text == "🏘 Номери")
@@ -143,7 +169,12 @@ class BookingState(StatesGroup):
     name = State()
 
 
-@dp.message(F.text == "Забронювати номер")
+@dp.message(F.text == "📖 Бронювання номерів")
+async def start_booking(message: types.Message, state: FSMContext):
+    await message.answer("Оберіть:", reply_markup=reservation_kb.as_markup(resize_keyboard=True))
+
+
+@dp.message(F.text == "🔔 Забронювати номер")
 async def start_booking(message: types.Message, state: FSMContext):
     await state.set_state(BookingState.waiting_for_room_type)
     await message.answer("Для початку бронювання оберіть тип номера:", reply_markup=rooms_kb.as_markup(resize_keyboard=True))
@@ -184,51 +215,56 @@ async def process_checkin_inf(message: types.Message, state: FSMContext):
 @dp.message(BookingState.name)
 async def process_checkout_date(message: types.Message, state: FSMContext):
     data = await state.get_data()
-    await state.clear()
+    id_user = message.from_user.id
     room_type = data.get('room_type')
     one_or_two_room_type = data.get('one_or_two_room_type')
-    checkin_date = str(data.get('checkin_date'))
-    checkout_date = str(data.get('checkout_date'))
+    checkin_date = data.get('checkin_date')
+    checkout_date = data.get('checkout_date')
 
     inf = message.text
     inf_parts = inf.split()
     first_name = inf_parts[0]
     last_name = ' '.join(inf_parts[1:])
 
-    print(room_type + ' ' + one_or_two_room_type + ' ' + checkin_date + ' ' + checkout_date + ' ' + first_name + ' ' + last_name)
+    conn = sqlite3.connect('reservation.db')
+    cursor = conn.cursor()
+    cursor.execute(
+        f"INSERT INTO reservation (user_id, room_type, one_or_two_room_type, checkin_date, checkout_date, first_name, last_name)"
+        f" VALUES ({id_user}, '{room_type}', '{one_or_two_room_type}', '{checkin_date}', '{checkout_date}', '{first_name}', '{last_name}')")
+    conn.commit()
+    conn.close()
+    await state.clear()
 
     await message.answer("✅ Ваш номер успішно заброньовано! ✅", reply_markup=start_kb)
+
+
+@dp.message(F.text == "📜 Мої заброньовані номери")
+async def my_bookings(message: types.Message):
+    user_id = message.from_user.id
+
+    conn = sqlite3.connect('reservation.db')
+    cursor = conn.cursor()
+    cursor.execute(f"SELECT * FROM reservation WHERE user_id = {user_id}")
+    reservations = cursor.fetchall()
+    conn.close()
+
+    if not reservations:
+        await message.answer("У вас немає заброньованих номерів.")
+        return
+
+    response = "Ваші заброньовані номери:\n"
+    for reservation in reservations:
+        response += (f"\n1️⃣️ Тип номера: <b>{reservation[3]}</b> "
+                     f"\n2️⃣ Одно-/двомісна: <b>{reservation[2]}</b> "
+                     f"\n3️⃣ Дата заїзду: <b>{reservation[4]}</b> "
+                     f"\n4️⃣ Дата виїзду: <b>{reservation[5]}</b>\n")
+
+    await message.answer(response, parse_mode="html")
 
 
 @dp.message(F.text == "◀ На головну")
 async def start_field(message: types.Message):
     await message.answer("Оберіть дію:", reply_markup=start_kb)
-
-
-class FeedbackState(StatesGroup):
-    waiting_for_feedback = State()
-
-
-@dp.message(F.text == "💬 Відгуки")
-async def feedbacks(message: types.Message, state: FSMContext):
-    await message.answer("Напишіть відгук:", reply_markup=del_kbd)
-    await state.set_state(FeedbackState.waiting_for_feedback)
-
-
-@dp.message(FeedbackState.waiting_for_feedback)
-async def send_feedback(message: types.Message):
-    data = {'user_text': message.text}
-
-    id_user = message.from_user.id
-
-    conn = sqlite3.connect('feedbacks.db')
-    cursor = conn.cursor()
-    cursor.execute(
-        f"INSERT INTO feedback (user_id, user_text) VALUES ({id_user}, '{data['user_text']}')")
-    conn.commit()
-    conn.close()
-
-    await message.answer("✅ Дякуємо за ваш відгук ✅", reply_markup=start_kb)
 
 
 async def main():
