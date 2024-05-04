@@ -1,5 +1,5 @@
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove, InlineKeyboardButton
-from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
+from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
 from datetime import timedelta
 
@@ -8,6 +8,7 @@ start_kb = ReplyKeyboardMarkup(
     keyboard=[
         [
             KeyboardButton(text="📞 Контактна інформація"),
+            KeyboardButton(text="🗺 Місця поруч"),
         ],
         [
             KeyboardButton(text="🏘 Номери"),

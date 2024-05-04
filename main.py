@@ -26,7 +26,8 @@ dp = Dispatcher()
 @dp.message(CommandStart())
 async def start_cmd(message: types.Message):
     await message.answer(
-        f"Вітаю, <b>{message.from_user.full_name}</b>, я Телеграм-бот, який допоможе Вам ознайомитися із готелем "
+        f"Вітаю, <b>{message.from_user.full_name}</b>, я Телеграм-бот, "
+        f"який допоможе Вам ознайомитися із готелем "
         f"'Україна'!", parse_mode="html", reply_markup=start_kb)
 
 
@@ -185,7 +186,6 @@ async def cancel_handler(message: types.Message, state: FSMContext):
     current_state = await state.get_state()
     if current_state is None:
         return
-
     await state.clear()
     await message.answer("❗Дія скасована❗", reply_markup=reservation_kb.as_markup(resize_keyboard=True))
 
@@ -230,7 +230,7 @@ async def process_checkin_inf(message: types.Message, state: FSMContext):
         await message.answer("Введіть <b>Прізвище</b> та <b>Ім'я</b>", parse_mode="html", reply_markup=del_kbd)
         await state.set_state(BookingState.name)
     except ValueError:
-        await message.answer("Будь ласка, оберіть дату із запропонованих.")
+        await message.answer("Будь ласка, введіть коректні дані.")
 
 
 @dp.message(BookingState.name)
