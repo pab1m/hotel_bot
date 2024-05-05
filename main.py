@@ -315,7 +315,7 @@ async def cancel_reservation(message: types.Message):
                 conn.commit()
                 await message.answer(f"Бронювання <b>{reservation_id}</b> видалено.", reply_markup=reservation_kb.as_markup(resize_keyboard=True), parse_mode='html')
             else:
-                await message.answer("Це не ваше бронювання, видалення неможливе.")
+                await message.answer("Це не ваше бронювання, видалення неможливе.", reply_markup=reservation_kb.as_markup(resize_keyboard=True))
     # conn.close()
 
 
