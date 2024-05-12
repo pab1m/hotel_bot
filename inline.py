@@ -14,18 +14,6 @@ def get_callback_btns(
     return keyboard.adjust(*sizes).as_markup()
 
 
-def get_url_btns(
-        *,
-        btns: dict[str, str],
-        sizes: tuple[int] = (2,)):
-    keyboard = InlineKeyboardBuilder()
-
-    for text, url in btns.items():
-        keyboard.add(InlineKeyboardButton(text=text, url=url))
-
-    return keyboard.adjust(*sizes).as_markup()
-
-
 standard = InlineKeyboardBuilder()
 standard.add(InlineKeyboardButton(text="🧍Одномісна🧍‍♀️", callback_data="one_room_standard"),
              InlineKeyboardButton(text="👫Двомісна👭", callback_data="two_room_standard"))

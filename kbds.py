@@ -82,6 +82,19 @@ my_reservation_kb.add(
 my_reservation_kb.adjust(2, 1, 1)
 
 
+places_nearby = ReplyKeyboardBuilder()
+places_nearby.add(
+    KeyboardButton(text="💊 Аптеки"),
+    KeyboardButton(text="🛞 Шиномонтажі"),
+    KeyboardButton(text="🍽️ Ресторани / Піцерії"),
+    KeyboardButton(text="🍅 Продуктові магазини"),
+    KeyboardButton(text="💈 Перукарні / Барбершопи"),
+    KeyboardButton(text="🏰 Місця для відпочинку"),
+    KeyboardButton(text="◀ На головну"),
+)
+places_nearby.adjust(2, 2, 2, 1)
+
+
 def generate_date_keyboard(checkin_date):
     date_kb = ReplyKeyboardBuilder()
     for i in range(8):

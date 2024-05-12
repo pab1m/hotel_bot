@@ -15,6 +15,8 @@ from datetime import datetime
 from kbds import *
 from inline import *
 
+from places import *
+
 TOKEN = "6822014885:AAGfBcgj1HZeA2BJ1LlFIg76bWhh0gzWQzM"
 
 ALLOWED_UPDATES = ['message, edited_message']
@@ -156,6 +158,77 @@ async def two_room_luxe(callback: types.CallbackQuery):
     await callback.message.answer(f"❗Ціна - 900 грн💸\n")
     await callback.message.answer(f"Оберіть тип кімнати:", reply_markup=luxe.as_markup(resize_keyboard=True))
     await callback.answer()
+
+
+@dp.message(F.text == "🗺 Місця поруч")
+async def place_nearby(message: types.Message):
+    await message.answer("Оберіть:", reply_markup=places_nearby.as_markup(resize_keyboard=True))
+
+
+@dp.message(F.text == "💊 Аптеки")
+async def pharmacies(message: types.Message):
+    pharmacy_1 = ("Західна Фармацевтична Компанія", "вул. Володимира Івасюка 2", "08:30-21:00", "https://maps.google.com/maps?q=вулиця Володимира Івасюка, 2")
+    pharmacy_2 = ("Подорожник", "вул. Василя Пачовського 1", "08:00–18:00", "https://maps.google.com/maps?q=вулиця Василя Пачовського, 1, Золочів, Львівська область, 80700")
+    pharmacy_3 = ("Аптека 3і", "вул. Маркіяна Шашкевича 5", "08:00–20:00", "https://maps.google.com/maps?q=вулиця Маркіяна Шашкевича, 5, Золочів, Львівська область, 80700")
+
+    pharmacies_info = place_def(pharmacy_1, pharmacy_2, pharmacy_3)
+
+    await message.answer(pharmacies_info, parse_mode="html")
+
+
+@dp.message(F.text == "🛞 Шиномонтажі")
+async def tire_fitting(message: types.Message):
+    tire_fitting_1 = ("Шиномонтаж", "вул. Івана Труша", "09:00–18:00", "https://maps.app.goo.gl/L1PjnCUXd3Jxtja49")
+    tire_fitting_2 = ("Redbox", "вул. Бродівська 19", "09:00–19:00", "https://maps.google.com/maps?q=Бродівська вулиця, 19, Золочів, Львівська область, 80700")
+    tire_fitting_3 = ("Шиномонтаж", "вул. Львівська 50", "09:00–18:00", "https://maps.google.com/maps?q=вулиця Львівська, 50, Золочів, Львівська область, 80700")
+
+    tire_fitting_info = place_def(tire_fitting_1, tire_fitting_2, tire_fitting_3)
+
+    await message.answer(tire_fitting_info, parse_mode="html")
+
+
+@dp.message(F.text == "🍽️ Ресторани / Піцерії")
+async def restaurants_and_pizzerias(message: types.Message):
+    restaurants_and_pizzerias_1 = ("Пріма-Піца", "вул. Валова 4а", "10:00–22:00", "https://maps.google.com/maps?q=вулиця Валова, 4а, Золочів, Львівська область, 80700")
+    restaurants_and_pizzerias_2 = ("Piccadilly", "вул. Михайла Лермонтова 2а", "09:00–19:00", "https://maps.google.com/maps?q=вулиця Михайла Лермонтова, 2а, Золочів, Львівська область, 80700")
+    restaurants_and_pizzerias_3 = ("Маяк", "вул. Пушкіна", "11:00–22:00", "https://maps.app.goo.gl/6hEW1DYAZLPBdw239")
+
+    restaurants_and_pizzerias_info = place_def(restaurants_and_pizzerias_1, restaurants_and_pizzerias_2, restaurants_and_pizzerias_3)
+
+    await message.answer(restaurants_and_pizzerias_info, parse_mode="html")
+
+
+@dp.message(F.text == "🍅 Продуктові магазини")
+async def product(message: types.Message):
+    product_1 = ("Наш Край", "вул. Січових Стрільців 5", "08:00–22:00", "https://maps.google.com/maps?q=вулиця Січових Стрільців, 5, Золочів, Львівська область, 80700")
+    product_2 = ("Гурман", "вул. Січових Стрільців 2Д", "08:00–20:00", "https://maps.google.com/maps?q=вулиця Січових Стрільців, 2Д, Золочів, Львівська область, 80700")
+    product_3 = ("АТБ", "вул. Львівська 5Б", "08:00–23:00", "https://maps.app.goo.gl/oV9yEkcsk7Nn6djYA")
+
+    product_info = place_def(product_1, product_2, product_3)
+
+    await message.answer(product_info, parse_mode="html")
+
+
+@dp.message(F.text == "💈 Перукарні / Барбершопи")
+async def hairdressers(message: types.Message):
+    hairdressers_1 = ("Barbershop Scissors", "вул. Львівська 5Б", "10:00–20:00", "https://maps.google.com/maps?q=вулиця Львівська, 5Б, Золочів, Львівська область, 80700")
+    hairdressers_2 = ("Barbershop Berserker", "вул. Романа Шухевича 3а", "10:00–21:00", "https://maps.app.goo.gl/a1PSvhYvRAyRJDZY8")
+    hairdressers_3 = ("Перукарня «Юля»", "вул. Михайла Лермонтова 2а", "09:00–18:00", "https://maps.app.goo.gl/Erzgew2XYQWhaN9i8")
+
+    hairdressers_info = place_def(hairdressers_1, hairdressers_2, hairdressers_3)
+
+    await message.answer(hairdressers_info, parse_mode="html")
+
+
+@dp.message(F.text == "🏰 Місця для відпочинку")
+async def vacation(message: types.Message):
+    vacation_1 = ("Парк імені гетьмана України Самуїла Зборовського", "вул. Валова", "Цілодобово", "https://maps.app.goo.gl/xCUbDUYnD63t9yGy5")
+    vacation_2 = ("Золочівський замок", "вул. Тернопільська", "11:00–17:30", "https://maps.app.goo.gl/5Mm983YMuq4zhQdK8")
+    vacation_3 = ("Парк «Здоров'я»", "вул. Маркіяна Шашкевича", "Цілодобово", "https://maps.app.goo.gl/QzXmcVcc1jti3Qb18")
+
+    vacation_info = place_def(vacation_1, vacation_2, vacation_3)
+
+    await message.answer(vacation_info, parse_mode="html")
 
 
 class BookingState(StatesGroup):
