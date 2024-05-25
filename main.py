@@ -167,9 +167,9 @@ async def place_nearby(message: types.Message):
 
 @dp.message(F.text == "💊 Аптеки")
 async def pharmacies(message: types.Message):
-    pharmacy_1 = ("Західна Фармацевтична Компанія", "вул. Володимира Івасюка 2", "08:30-21:00", "https://maps.google.com/maps?q=вулиця Володимира Івасюка, 2")
-    pharmacy_2 = ("Подорожник", "вул. Василя Пачовського 1", "08:00–18:00", "https://maps.google.com/maps?q=вулиця Василя Пачовського, 1, Золочів, Львівська область, 80700")
-    pharmacy_3 = ("Аптека 3і", "вул. Маркіяна Шашкевича 5", "08:00–20:00", "https://maps.google.com/maps?q=вулиця Маркіяна Шашкевича, 5, Золочів, Львівська область, 80700")
+    pharmacy_1 = ("Західна Фармацевтична Компанія", "вул. Володимира Івасюка 2", "08:30-21:00", "https://maps.app.goo.gl/zcFBVZwtxUvVcsoS8")
+    pharmacy_2 = ("Подорожник", "вул. Василя Пачовського 1", "08:00–18:00", "https://maps.app.goo.gl/rAyYg88zmJY1zqq9A")
+    pharmacy_3 = ("Аптека 3і", "вул. Маркіяна Шашкевича 5", "08:00–20:00", "https://maps.app.goo.gl/TLqEi1kRw3vyxkJ66")
 
     pharmacies_info = place_def(pharmacy_1, pharmacy_2, pharmacy_3)
 
@@ -179,8 +179,8 @@ async def pharmacies(message: types.Message):
 @dp.message(F.text == "🛞 Шиномонтажі")
 async def tire_fitting(message: types.Message):
     tire_fitting_1 = ("Шиномонтаж", "вул. Івана Труша", "09:00–18:00", "https://maps.app.goo.gl/L1PjnCUXd3Jxtja49")
-    tire_fitting_2 = ("Redbox", "вул. Бродівська 19", "09:00–19:00", "https://maps.google.com/maps?q=Бродівська вулиця, 19, Золочів, Львівська область, 80700")
-    tire_fitting_3 = ("Шиномонтаж", "вул. Львівська 50", "09:00–18:00", "https://maps.google.com/maps?q=вулиця Львівська, 50, Золочів, Львівська область, 80700")
+    tire_fitting_2 = ("Redbox", "вул. Бродівська 19", "09:00–19:00", "https://maps.app.goo.gl/PwmNuuhTGWA92Ue8A")
+    tire_fitting_3 = ("Шиномонтаж", "вул. Львівська 50", "09:00–18:00", "https://maps.app.goo.gl/sPLhr41LeznSvoKL6")
 
     tire_fitting_info = place_def(tire_fitting_1, tire_fitting_2, tire_fitting_3)
 
@@ -189,8 +189,8 @@ async def tire_fitting(message: types.Message):
 
 @dp.message(F.text == "🍽️ Ресторани / Піцерії")
 async def restaurants_and_pizzerias(message: types.Message):
-    restaurants_and_pizzerias_1 = ("Пріма-Піца", "вул. Валова 4а", "10:00–22:00", "https://maps.google.com/maps?q=вулиця Валова, 4а, Золочів, Львівська область, 80700")
-    restaurants_and_pizzerias_2 = ("Piccadilly", "вул. Михайла Лермонтова 2а", "09:00–19:00", "https://maps.google.com/maps?q=вулиця Михайла Лермонтова, 2а, Золочів, Львівська область, 80700")
+    restaurants_and_pizzerias_1 = ("Пріма-Піца", "вул. Валова 4а", "10:00–22:00", "https://maps.app.goo.gl/vg7YDVGDCp4w42rc8")
+    restaurants_and_pizzerias_2 = ("Piccadilly", "вул. Михайла Лермонтова 2а", "09:00–19:00", "https://maps.app.goo.gl/Ac9q9QDnrXuoKfnw5")
     restaurants_and_pizzerias_3 = ("Маяк", "вул. Пушкіна", "11:00–22:00", "https://maps.app.goo.gl/6hEW1DYAZLPBdw239")
 
     restaurants_and_pizzerias_info = place_def(restaurants_and_pizzerias_1, restaurants_and_pizzerias_2, restaurants_and_pizzerias_3)
@@ -200,8 +200,8 @@ async def restaurants_and_pizzerias(message: types.Message):
 
 @dp.message(F.text == "🍅 Продуктові магазини")
 async def product(message: types.Message):
-    product_1 = ("Наш Край", "вул. Січових Стрільців 5", "08:00–22:00", "https://maps.google.com/maps?q=вулиця Січових Стрільців, 5, Золочів, Львівська область, 80700")
-    product_2 = ("Гурман", "вул. Січових Стрільців 2Д", "08:00–20:00", "https://maps.google.com/maps?q=вулиця Січових Стрільців, 2Д, Золочів, Львівська область, 80700")
+    product_1 = ("Наш Край", "вул. Січових Стрільців 5", "08:00–22:00", "https://maps.app.goo.gl/aBDppJERnFj1Jnpt6")
+    product_2 = ("Гурман", "вул. Січових Стрільців 2Д", "08:00–20:00", "https://maps.app.goo.gl/zHDey7C5qa1wUK6i8")
     product_3 = ("АТБ", "вул. Львівська 5Б", "08:00–23:00", "https://maps.app.goo.gl/oV9yEkcsk7Nn6djYA")
 
     product_info = place_def(product_1, product_2, product_3)
@@ -211,7 +211,7 @@ async def product(message: types.Message):
 
 @dp.message(F.text == "💈 Перукарні / Барбершопи")
 async def hairdressers(message: types.Message):
-    hairdressers_1 = ("Barbershop Scissors", "вул. Львівська 5Б", "10:00–20:00", "https://maps.google.com/maps?q=вулиця Львівська, 5Б, Золочів, Львівська область, 80700")
+    hairdressers_1 = ("Barbershop Scissors", "вул. Львівська 5Б", "10:00–20:00", "https://maps.app.goo.gl/Vvi8ZRqTb6Stm4Tq6")
     hairdressers_2 = ("Barbershop Berserker", "вул. Романа Шухевича 3а", "10:00–21:00", "https://maps.app.goo.gl/a1PSvhYvRAyRJDZY8")
     hairdressers_3 = ("Перукарня «Юля»", "вул. Михайла Лермонтова 2а", "09:00–18:00", "https://maps.app.goo.gl/Erzgew2XYQWhaN9i8")
 
